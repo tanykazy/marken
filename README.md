@@ -4,6 +4,7 @@
 
 精読の際に、統語構造を明示的に説明するときにご活用ください。
 
+[marken デモ](https://t-cool.github.io/marken/)
 
 ## 使い方
 

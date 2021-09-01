@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>意味順</title>
+<style>
+#english{
+    /* 行間 */
+    line-height: 250%;
+
+    /* 文字の大きさ */
+    font-size: 1.5em;
+
+    /* 文字折り返し */
+    overflow-wrap: normal;
+}
+</style>
+</head>
+<body>
+
+<!-- 英文の貼り付け場所 -->    
+<input id="originalTxt" type="text" style="display:inline-block;width:500px;">
+
+<!-- ボタン -->  
+<button id="btn" style="display:inline-block;width:500px">Insert</button>
+
+<!-- 記号をつける場所 -->
+<div id="english">
+Please paste your English text into the box above and click the button.<br>
+上のボックスに英文を貼り付けてボタンを押してください。 
+</div>
+<script>
+
+// 原文を貼り付ける
+window.btn.addEventListener('click',function(){
+    window.document.getElementById('english').innerText = window.document.getElementById('originalTxt').value;
+
+    //貼り付けた英文を削除する
+    window.document.getElementById('originalTxt').value = "";
+    window.document.getElementById('btn').remove();
+    window.document.getElementById('originalTxt').remove();
+})
+
+// 履歴
+const history = [];
+
+// 履歴への追加
+function addToHistory(){
+}
+
+function redo(){    
+}
+
+function undo(){
+}
+
+// 選択箇所の記号をクリアする
+function clear(){
+  let selection = window.getSelection();
+  if(!selection.rangeCount) return; 
+  let range = selection.getRangeAt(0);
+  let newNode = document.createElement('span');
+  newNode.setAttribute('style', ''); 
+  newNode.innerHTML = selection.toString().replace("＜","").replace("＞","").replace(" )","").replace("( ","").replace("⤺","");
+  range.deleteContents();
+  range.insertNode(newNode);
+}
+
+// 機能語の記号をつける
+function alpha(){
+  let selection = window.getSelection();
+  if(!selection.rangeCount) return; 
+  let range = selection.getRangeAt(0);
+  let newNode = document.createElement('span');
+  newNode.setAttribute('style', 'border: solid 1px black;background-color: #fff0e0');
+  // 半角スペース '&thinsp;'
+  newNode.innerHTML = selection.toString();
+  range.deleteContents();
+  range.insertNode(newNode);
+}
+
+// 主語の記号をつける
+function s(){
+  let selection = window.getSelection();
+  if(!selection.rangeCount) return; 
+  let range = selection.getRangeAt(0);
+  let newNode = document.createElement('span');
+  newNode.setAttribute('style', 'border-bottom:3px double black;padding-bottom:2px;'); 
+  newNode.innerHTML = selection.toString();
+  range.deleteContents();
+  range.insertNode(newNode);
+}
+
+// 動詞の記号をつける
+function v(){
+  let selection = window.getSelection();
+  if(!selection.rangeCount) return; 
+  let range = selection.getRangeAt(0);
+  let newNode = document.createElement('span');
+  newNode.setAttribute('style', 'border: solid 1px black;border-radius: 10px;');
+  newNode.innerHTML = selection.toString();
+  range.deleteContents();
+  range.insertNode(newNode);
+}
+
+// 目的語(O)・補語(C)の記号をつける
+function oc(){
+  let selection = window.getSelection();
+  if(!selection.rangeCount) return; 
+  let range = selection.getRangeAt(0);
+  let newNode = document.createElement('span');
+  newNode.setAttribute('style', 'border-bottom:1px solid black;padding-bottom:2px;'); 
+  newNode.innerHTML = selection.toString();
+  range.deleteContents();
+  range.insertNode(newNode);
+}
+
+// 副詞の記号をつける
+function adv(){
+  let selection = window.getSelection();
+  if(!selection.rangeCount) return; 
+  let range = selection.getRangeAt(0);
+  let newNode = document.createElement('span');
+  newNode.innerHTML = "＜"+selection.toString()+"＞";
+  range.deleteContents();
+  range.insertNode(newNode);
+}
+
+// 後置修飾の記号をつける
+function adj(){
+  let selection = window.getSelection();
+  if(!selection.rangeCount) return; 
+  let range = selection.getRangeAt(0);
+  let newNode = document.createElement('span');
+  newNode.innerHTML = '<span style="display:inline-block;transform:scale(1.5, 1);">⤺</span>'+
+    '( '+ 
+    selection.toString()+' )';
+  range.deleteContents();
+  range.insertNode(newNode);
+}
+
+// キー操作
+document.addEventListener('keypress', (event) => {
+
+    // 記号付け
+    let keyName = event.key;
+    if (keyName == 'a'){
+        s();
+    }else if(keyName == 's'){
+        v();
+    }else if(keyName == 'd'){
+        oc();
+    }else if(keyName == 'f'){
+        adv();
+    }else if(keyName == 'g'){
+        adj();
+    }else if(keyName == 'z'){
+        alpha();
+    }else if(keyName == 'c'){
+        clear();
+    }
+
+    // 取り消し・やり直し
+
+});
+
+// マウス選択操作
+const element = document.querySelector("body");
+element.addEventListener('selectstart', function(){
+    element.addEventListener('mouseup', function(event) {        
+        // 半角スペースで始まるときは選択を打ち消す
+        if(window.getSelection().toString().slice(0,1) == " "){
+            console.log("!")
+            window.getSelection().removeAllRanges();
+        }
+        // 最後が半角スペースで始まるときは選択を打ち消す
+        if(window.getSelection().toString().slice(-1) == " "){
+            console.log("!")
+            window.getSelection().removeAllRanges();
+        }
+    });
+});
+
+
+</script>
+</body>

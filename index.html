@@ -4,34 +4,58 @@
 <meta charset="UTF-8">
 <title>意味順</title>
 <style>
+.container{
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+#originalTxt{
+  display:inline-block;
+  overflow-wrap: anywhere;
+  width:80%;
+  height: 100px;  
+}
+
+#btn{
+  display:inline-block;
+  width:80%;
+  height: 50px;
+  font-size: 20px;
+}
+
 #english{
     /* 行間 */
     line-height: 250%;
-
     /* 文字の大きさ */
     font-size: 1.5em;
-
     /* 文字折り返し */
     overflow-wrap: normal;
 }
+
 </style>
 </head>
 <body>
-
-<!-- 英文の貼り付け場所 -->    
-<input id="originalTxt" type="text" style="display:inline-block;width:500px;">
+<div class="container">
+  
+<!-- 英文の貼り付け場所 -->
+<input id="originalTxt" type="text">
 
 <br>
 
 <!-- ボタン -->  
-<button id="btn" style="display:inline-block;width:500px">Insert</button>
+<button id="btn">Button</button>
 
 <!-- 記号をつける場所 -->
 <div id="english">
-Please paste your English text into the box above and click the button.<br>
-上のボックスに英文を貼り付けてボタンを押してください。 
+Please paste English and click the button.
 </div>
+
+</div>
+
 <script>
+// 操作ラベル番号  
+let actionNumber = 0;
 
 // 原文を貼り付ける
 window.btn.addEventListener('click',function(){
@@ -43,18 +67,22 @@ window.btn.addEventListener('click',function(){
     window.document.getElementById('originalTxt').remove();
 })
 
-// 履歴
-const history = [];
+document.addEventListener('keydown', (event) => {
+  // Cmd(Ctrl)+z で直前の操作を取り消す
+  if (event.key === 'z' && (event.ctrlKey || event.metaKey)) {
+    // スタイルを削除する
+    document.getElementById(`action${actionNumber-1}`).style = null;    
+    // 記号を削除する
+    document.getElementById(`action${actionNumber-1}`).innerHTML = 
+    document.getElementById(`action${actionNumber-1}`).innerHTML.replace("＜","").replace("＞","").replace(" )","").replace("( ","").replace("⤺","");
 
-// 履歴への追加
-function addToHistory(){
-}
+    // id を消す
+    document.getElementById(`action${actionNumber-1}`).removeAttribute("id");
 
-function redo(){    
-}
-
-function undo(){
-}
+    // 操作ラベルを 1 減らす
+    actionNumber -= 1;    
+  }
+});
 
 // 選択箇所の記号をクリアする
 function clear(){
@@ -75,10 +103,14 @@ function alpha(){
   let range = selection.getRangeAt(0);
   let newNode = document.createElement('span');
   newNode.setAttribute('style', 'border: solid 1px black;background-color: #fff0e0');
+  newNode.setAttribute('id', `action${actionNumber}`);
   // 半角スペース '&thinsp;'
   newNode.innerHTML = selection.toString();
   range.deleteContents();
   range.insertNode(newNode);
+
+  // 操作のタグ番号を更新する
+  actionNumber += 1;
 }
 
 // 主語の記号をつける
@@ -87,10 +119,14 @@ function s(){
   if(!selection.rangeCount) return; 
   let range = selection.getRangeAt(0);
   let newNode = document.createElement('span');
-  newNode.setAttribute('style', 'border-bottom:3px double black;padding-bottom:2px;'); 
+  newNode.setAttribute('style', 'border-bottom:3px double black;padding-bottom:2px;');
+  newNode.setAttribute('id', `action${actionNumber}`);
   newNode.innerHTML = selection.toString();
   range.deleteContents();
   range.insertNode(newNode);
+
+  // 操作のタグ番号を更新する
+  actionNumber += 1;
 }
 
 // 動詞の記号をつける
@@ -100,9 +136,13 @@ function v(){
   let range = selection.getRangeAt(0);
   let newNode = document.createElement('span');
   newNode.setAttribute('style', 'border: solid 1px black;border-radius: 10px;');
+  newNode.setAttribute('id', `action${actionNumber}`);
   newNode.innerHTML = selection.toString();
   range.deleteContents();
   range.insertNode(newNode);
+
+  // 操作のタグ番号を更新する
+  actionNumber += 1;
 }
 
 // 目的語(O)・補語(C)の記号をつける
@@ -112,9 +152,13 @@ function oc(){
   let range = selection.getRangeAt(0);
   let newNode = document.createElement('span');
   newNode.setAttribute('style', 'border-bottom:1px solid black;padding-bottom:2px;'); 
+  newNode.setAttribute('id', `action${actionNumber}`);
   newNode.innerHTML = selection.toString();
   range.deleteContents();
   range.insertNode(newNode);
+
+  // 操作のタグ番号を更新する
+  actionNumber += 1;
 }
 
 // 副詞の記号をつける
@@ -123,9 +167,13 @@ function adv(){
   if(!selection.rangeCount) return; 
   let range = selection.getRangeAt(0);
   let newNode = document.createElement('span');
+  newNode.setAttribute('id', `action${actionNumber}`);
   newNode.innerHTML = "＜"+selection.toString()+"＞";
   range.deleteContents();
   range.insertNode(newNode);
+
+  // 操作のタグ番号を更新する
+  actionNumber += 1;
 }
 
 // 後置修飾の記号をつける
@@ -134,11 +182,15 @@ function adj(){
   if(!selection.rangeCount) return; 
   let range = selection.getRangeAt(0);
   let newNode = document.createElement('span');
+  newNode.setAttribute('id', `action${actionNumber}`);
   newNode.innerHTML = '<span style="display:inline-block;transform:scale(1.5, 1);">⤺</span>'+
     '( '+ 
     selection.toString()+' )';
   range.deleteContents();
   range.insertNode(newNode);
+
+  // 操作のタグ番号を更新する
+  actionNumber += 1;
 }
 
 // キー操作
@@ -162,8 +214,6 @@ document.addEventListener('keypress', (event) => {
         clear();
     }
 
-    // 取り消し・やり直し
-
 });
 
 // マウス選択操作
@@ -182,7 +232,5 @@ element.addEventListener('selectstart', function(){
         }
     });
 });
-
-
 </script>
 </body>

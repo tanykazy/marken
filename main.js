@@ -225,8 +225,8 @@ element.addEventListener('selectstart', function(){
     });
 });
 
-// クリックで記号がついた句/節を選ぶ
-document.addEventListener('click', function(event){
+// ダブルクリックで記号がついた句/節を選ぶ
+document.addEventListener('dblclick', function(event){
   // クリックしたblock要素のidを確認する
   console.log(event.target.id);
 });

@@ -1,0 +1,41 @@
+.container{
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+#originalTxt{
+  display:inline-block;
+  overflow-wrap: anywhere;
+  width:80%;
+  height: 300px;  
+}
+
+#btn{
+  display:inline-block;
+  width:80%;
+  height: 50px;
+  font-size: 20px;
+}
+
+#english{
+    /* 行間 */
+    line-height: 250%;
+    /* 文字の大きさ */
+    font-size: 1.5em;
+    /* 文字折り返し */
+    overflow-wrap: normal;
+}
+
+[data-ruby] {
+    position: relative;
+}
+[data-ruby]::before {
+    content: attr(data-ruby);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    font-size: 13px;
+}

@@ -1,7 +1,7 @@
 // 履歴関連
 let history = {
   // プロパティ
-  currentSymbolNumber: 0,   // 直近のアクション番号
+  currentSymbolNumber: 1,   // 直近のアクション番号
   allActions: {}, // 全てのアクション
 
   // メソッド
@@ -74,7 +74,7 @@ function alpha(){
   if(!selection.rangeCount) return; 
   let range = selection.getRangeAt(0);
   let newNode = document.createElement('span');
-  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber()+1);
+  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
   newNode.setAttribute('style', 'border: solid 1px black;background-color: #fff0e0');
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
   // 半角スペース '&thinsp;'
@@ -96,7 +96,7 @@ function s(){
   let newNode = document.createElement('span');
   newNode.setAttribute('style', 'border-bottom:3px double black;padding-bottom:2px;');
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
-  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber()+1);
+  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
   newNode.innerHTML = selection.toString();
   range.deleteContents();
   range.insertNode(newNode);
@@ -114,7 +114,7 @@ function v(){
   let newNode = document.createElement('span');
   newNode.setAttribute('style', 'border: solid 1px black;border-radius: 10px;');
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
-  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber()+1);
+  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
   newNode.innerHTML = selection.toString();
   range.deleteContents();
   range.insertNode(newNode);
@@ -132,7 +132,7 @@ function oc(){
   let newNode = document.createElement('span');
   newNode.setAttribute('style', 'border-bottom:1px solid black;padding-bottom:2px;'); 
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
-  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber()+1);
+  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
   newNode.innerHTML = selection.toString();
   range.deleteContents();
   range.insertNode(newNode);
@@ -148,9 +148,9 @@ function adv(){
   if(!selection.rangeCount) return; 
   let range = selection.getRangeAt(0);
   let newNode = document.createElement('span');  
-  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber()+1);
+  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
-  newNode.innerHTML = "＜"+selection.toString()+"＞";
+  newNode.innerHTML = `＜${selection.toString()}＞`;
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近の action を追加する
@@ -166,10 +166,9 @@ function adj(){
   let range = selection.getRangeAt(0);
   let newNode = document.createElement('span');
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
-  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber()+1);
-  newNode.innerHTML = '<span style="display:inline-block;transform:scale(1.5, 1);">⤺</span>'+
-    '( '+ 
-    selection.toString()+' )';
+  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
+  newNode.innerHTML = 
+  `<span style="display:inline-block;transform:scale(1.5, 1);">⤺</span>( ${selection.toString()} )`;
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近の action を追加する
@@ -225,8 +224,24 @@ element.addEventListener('selectstart', function(){
     });
 });
 
-// ダブルクリックで記号がついた句/節を選ぶ
+// ダブルクリックした要素に input text でヒントを加える
 document.addEventListener('dblclick', function(event){
-  // クリックしたblock要素のidを確認する
+
+  // 記号がないときは return
+  if(event.target.id=="english") return;
+
+  // クリックされた要素のidを確認する
   console.log(event.target.id);
+
+  document.getElementById(`${event.target.id}`).setAttribute('class','tooltip');
+
+  let newElement = document.createElement("span");
+  let newContent = document.createTextNode("");
+  newElement.innerHTML += `<input type="text" class="hint" name="name">`;
+  newElement.appendChild(newContent);
+  newElement.setAttribute("class","tooltiptext");
+  document.getElementById(`${event.target.id}`).appendChild(newElement);
+  //`<input type="text" class="hint" name="name">`;
+
 });
+

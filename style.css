@@ -19,12 +19,13 @@
 }
 
 #english{
-    /* 行間 */
-    line-height: 250%;
-    /* 文字の大きさ */
-    font-size: 1.5em;
-    /* 文字折り返し */
-    overflow-wrap: normal;
+  display: block;
+  /* 行間 */
+  line-height: 250%;
+  /* 文字の大きさ */
+  font-size: 1.5em;
+  /* 文字折り返し */
+  overflow-wrap: normal;
 }
 
 [data-ruby] {
@@ -39,3 +40,29 @@
     margin: auto;
     font-size: 13px;
 }
+
+.tooltip {
+  background-color:lightblue;
+}
+
+.tooltip .tooltiptext {
+  font-size:10px;
+  visibility: hidden;
+  width: 150px;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  
+  /* tooltip の位置 */
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+

@@ -18,7 +18,9 @@ let history = {
     this.currentSymbolNumber -= 1;    
   },
   // 現在のアクションを allActions に追加する
-  addCurrentToAllActions: function(){}
+  addCurrentActionToAllActions: function(){
+    this.allActions[`action${this.currentSymbolNumber}`] = null;
+  }
 };
 
 // ページ内の要素を削除する
@@ -79,10 +81,11 @@ function alpha(){
   newNode.innerHTML = selection.toString();
   range.deleteContents();
   range.insertNode(newNode);
-  // 履歴にタグと位置を入れる
-  history.addCurrentToAllActions();
+  // 履歴に直近のアクションを追加
+  history.addCurrentActionToAllActions();
   // 操作のタグ番号を更新する
   history.increaseCurrentSymbolNumber();
+
 }
 
 // 主語の記号をつける
@@ -97,8 +100,8 @@ function s(){
   newNode.innerHTML = selection.toString();
   range.deleteContents();
   range.insertNode(newNode);
-  // 履歴にタグと位置を入れる
-  history.addCurrentToAllActions();
+  // 履歴に直近の action を追加する
+  history.addCurrentActionToAllActions();
   // 操作のタグ番号を更新する
   history.increaseCurrentSymbolNumber();
 }
@@ -115,8 +118,8 @@ function v(){
   newNode.innerHTML = selection.toString();
   range.deleteContents();
   range.insertNode(newNode);
-  // 履歴にタグと位置を入れる
-  history.addCurrentToAllActions();
+  // 履歴に直近の action を追加
+  history.addCurrentActionToAllActions();
   // 操作のタグ番号を更新する
   history.increaseCurrentSymbolNumber();
 }
@@ -133,8 +136,8 @@ function oc(){
   newNode.innerHTML = selection.toString();
   range.deleteContents();
   range.insertNode(newNode);
-  // 履歴にタグと位置を入れる
-  history.addCurrentToAllActions();
+  // 履歴に直近の action を追加する
+  history.addCurrentActionToAllActions();
   // 操作のタグ番号を更新する
   history.increaseCurrentSymbolNumber();
 }
@@ -150,8 +153,8 @@ function adv(){
   newNode.innerHTML = "＜"+selection.toString()+"＞";
   range.deleteContents();
   range.insertNode(newNode);
-  // 履歴にタグと位置を入れる
-  history.addCurrentToAllActions();
+  // 履歴に直近の action を追加する
+  history.addCurrentActionToAllActions();
   // 操作のタグ番号を更新する
   history.increaseCurrentSymbolNumber();
 }
@@ -169,8 +172,8 @@ function adj(){
     selection.toString()+' )';
   range.deleteContents();
   range.insertNode(newNode);
-  // 履歴にタグと位置を入れる
-  history.addCurrentToAllActions();
+  // 履歴に直近の action を追加する
+  history.addCurrentActionToAllActions();
   // 操作のタグ番号を更新する
   history.increaseCurrentSymbolNumber();
 }
@@ -220,4 +223,10 @@ element.addEventListener('selectstart', function(){
             window.getSelection().removeAllRanges();
         }
     });
+});
+
+// クリックで記号がついた句/節を選ぶ
+document.addEventListener('click', function(event){
+  // クリックしたblock要素のidを確認する
+  console.log(event.target.id);
 });

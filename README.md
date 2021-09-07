@@ -6,8 +6,6 @@
 
 [marken デモ](https://t-cool.github.io/marken/)
 
-[marken 操作動画](https://youtu.be/X2cFxI4PpG0)
-
 ## 使い方
 
 英文を読み込み後、記号をつける範囲を選択して以下のキーを押すと、選択された箇所に記号がつきます。

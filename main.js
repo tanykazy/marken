@@ -1,3 +1,21 @@
+function Marken() {
+  this.text = '';
+  this.explanations = [];
+  this.index = 0;
+}
+
+function Explanation() {
+  this.range = null;
+  this.instruction = null;
+}
+
+function Instruction() {
+  this.fn = null;
+}
+
+let marken = new Marken();
+
+
 // 履歴関連
 let history = {
   // プロパティ
@@ -6,98 +24,80 @@ let history = {
 
   // メソッド
   // 直近のアクション番号を取得
-  getCurrentSymbolNumber: function(){
+  getCurrentSymbolNumber: function () {
     return this.currentSymbolNumber
   },
   // アクション番号を inc する
-  increaseCurrentSymbolNumber: function(){
-    this.currentSymbolNumber += 1;    
+  increaseCurrentSymbolNumber: function () {
+    this.currentSymbolNumber += 1;
   },
   // アクション番号を dec する
-  decreaseCurrentSymbolNumber: function(){
-    this.currentSymbolNumber -= 1;    
+  decreaseCurrentSymbolNumber: function () {
+    this.currentSymbolNumber -= 1;
   },
   // 現在のアクションを allActions に追加する
-  addCurrentActionToAllActions: function(){
+  addCurrentActionToAllActions: function () {
     this.allActions[`action${this.currentSymbolNumber}`] = null;
   }
 };
 
 // ページ内の要素を削除する
-function removeElements(){
-    window.document.getElementById('english').innerText = window.document.getElementById('originalTxt').value;
-    window.document.getElementById('originalTxt').value = "";
-    window.document.getElementById('btn').remove();
-    window.document.getElementById('originalTxt').remove();
+function removeElements() {
+  window.document.getElementById('english').innerText = window.document.getElementById('originalTxt').value;
+  window.document.getElementById('originalTxt').value = "";
+  window.document.getElementById('btn').remove();
+  window.document.getElementById('originalTxt').remove();
 }
-// 原文を貼り付ける
-window.btn.addEventListener('click', function(){removeElements();});
 
 // つけた記号を削除する
-function clear(){
-    // 線記号の削除
-    document.getElementById(`action${history.getCurrentSymbolNumber()-1}`).style = null;
-    // 括弧記号 ( ) ＜ ＞ の削除
-    document.getElementById(`action${history.getCurrentSymbolNumber()-1}`).innerHTML = 
-    document.getElementById(`action${history.getCurrentSymbolNumber()-1}`).innerHTML.replace("＜","").replace("＞","").replace(" )","").replace("( ","").replace("⤺","");
-    // ルビの消去
-    document.getElementById(`action${history.getCurrentSymbolNumber()-1}`).removeAttribute("data-ruby");
-    // id の消去
-    document.getElementById(`action${history.getCurrentSymbolNumber()-1}`).removeAttribute("id");
-    // 操作ラベルを 1 減らす
-    history.decreaseCurrentSymbolNumber();
+function clear() {
+  // 線記号の削除
+  document.getElementById(`action${history.getCurrentSymbolNumber() - 1}`).style = null;
+  // 括弧記号 ( ) ＜ ＞ の削除
+  document.getElementById(`action${history.getCurrentSymbolNumber() - 1}`).innerHTML =
+    document.getElementById(`action${history.getCurrentSymbolNumber() - 1}`).innerHTML.replace("＜", "").replace("＞", "").replace(" )", "").replace("( ", "").replace("⤺", "");
+  // ルビの消去
+  document.getElementById(`action${history.getCurrentSymbolNumber() - 1}`).removeAttribute("data-ruby");
+  // id の消去
+  document.getElementById(`action${history.getCurrentSymbolNumber() - 1}`).removeAttribute("id");
+  // 操作ラベルを 1 減らす
+  history.decreaseCurrentSymbolNumber();
 }
-document.addEventListener('keydown', (event) => {
-  // Cmd(Ctrl)+z で直前の操作を取り消す
-  if (event.key === 'z' && (event.ctrlKey || event.metaKey)) {
-    clear();
-  }
-});
 
 // 選択箇所の記号をクリアする
-function clearSelected(){
-  let selection = window.getSelection();
-  if(!selection.rangeCount) return; 
-  let range = selection.getRangeAt(0);
+function clearSelected(range) {
   let newNode = document.createElement('span');
-  newNode.setAttribute('style', ''); 
-  newNode.innerHTML = selection.toString().replace("＜","").replace("＞","").replace(" )","").replace("( ","").replace("⤺","");
+  newNode.setAttribute('style', '');
+  newNode.innerHTML = range.toString().replace("＜", "").replace("＞", "").replace(" )", "").replace("( ", "").replace("⤺", "");
   range.deleteContents();
   range.insertNode(newNode);
   // 操作ラベルを 1 減らす
-  history.decreaseCurrentSymbolNumber(); 
+  history.decreaseCurrentSymbolNumber();
 }
 
 // 機能語の記号をつける
-function alpha(){
-  let selection = window.getSelection();
-  if(!selection.rangeCount) return; 
-  let range = selection.getRangeAt(0);
+function alpha(range) {
   let newNode = document.createElement('span');
-  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber()+1);
+  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber() + 1);
   newNode.setAttribute('style', 'border: solid 1px black;background-color: #fff0e0');
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
   // 半角スペース '&thinsp;'
-  newNode.innerHTML = selection.toString();
+  newNode.innerHTML = range.toString();
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近のアクションを追加
   history.addCurrentActionToAllActions();
   // 操作のタグ番号を更新する
   history.increaseCurrentSymbolNumber();
-
 }
 
 // 主語の記号をつける
-function s(){
-  let selection = window.getSelection();
-  if(!selection.rangeCount) return; 
-  let range = selection.getRangeAt(0);
+function s(range) {
   let newNode = document.createElement('span');
   newNode.setAttribute('style', 'border-bottom:3px double black;padding-bottom:2px;');
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
-  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber()+1);
-  newNode.innerHTML = selection.toString();
+  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber() + 1);
+  newNode.innerHTML = range.toString();
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近の action を追加する
@@ -107,15 +107,12 @@ function s(){
 }
 
 // 動詞の記号をつける
-function v(){
-  let selection = window.getSelection();
-  if(!selection.rangeCount) return; 
-  let range = selection.getRangeAt(0);
+function v(range) {
   let newNode = document.createElement('span');
   newNode.setAttribute('style', 'border: solid 1px black;border-radius: 10px;');
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
-  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber()+1);
-  newNode.innerHTML = selection.toString();
+  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber() + 1);
+  newNode.innerHTML = range.toString();
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近の action を追加
@@ -125,15 +122,12 @@ function v(){
 }
 
 // 目的語(O)・補語(C)の記号をつける
-function oc(){
-  let selection = window.getSelection();
-  if(!selection.rangeCount) return; 
-  let range = selection.getRangeAt(0);
+function oc(range) {
   let newNode = document.createElement('span');
-  newNode.setAttribute('style', 'border-bottom:1px solid black;padding-bottom:2px;'); 
+  newNode.setAttribute('style', 'border-bottom:1px solid black;padding-bottom:2px;');
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
-  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber()+1);
-  newNode.innerHTML = selection.toString();
+  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber() + 1);
+  newNode.innerHTML = range.toString();
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近の action を追加する
@@ -143,14 +137,11 @@ function oc(){
 }
 
 // 副詞の記号をつける
-function adv(){
-  let selection = window.getSelection();
-  if(!selection.rangeCount) return; 
-  let range = selection.getRangeAt(0);
-  let newNode = document.createElement('span');  
-  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber()+1);
+function adv(range) {
+  let newNode = document.createElement('span');
+  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber() + 1);
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
-  newNode.innerHTML = "＜"+selection.toString()+"＞";
+  newNode.innerHTML = "＜" + range.toString() + "＞";
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近の action を追加する
@@ -160,16 +151,14 @@ function adv(){
 }
 
 // 後置修飾の記号をつける
-function adj(){
-  let selection = window.getSelection();
-  if(!selection.rangeCount) return; 
-  let range = selection.getRangeAt(0);
+function adj(range) {
   let newNode = document.createElement('span');
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
-  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber()+1);
-  newNode.innerHTML = '<span style="display:inline-block;transform:scale(1.5, 1);">⤺</span>'+
-    '( '+ 
-    selection.toString()+' )';
+  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber() + 1);
+  newNode.innerHTML = '<span style="display:inline-block;transform:scale(1.5, 1);">⤺</span>'
+    + '( '
+    + range.toString()
+    + ' )';
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近の action を追加する
@@ -180,53 +169,82 @@ function adj(){
 
 // キー操作
 document.addEventListener('keypress', (event) => {
+  const selection = document.getSelection();
+  const range = selection.getRangeAt(0);
 
-    // 選択範囲がないときは return
-    if(window.getSelection().toString() == '') return;
-    // 記号付け
-    let keyName = event.key;
-    if (keyName == 'a'){
-        s();
-    }else if(keyName == 's'){
-        v();
-    }else if(keyName == 'd'){
-        oc();
-    }else if(keyName == 'f'){
-        adv();
-    }else if(keyName == 'g'){
-        adj();
-    }else if(keyName == 'z'){
-        alpha();
-    }else if(keyName == 'c'){
-        clearSelected();
+  const explanation = new Explanation();
+  explanation.range = range;
+
+  // 選択範囲がないときは return
+  if (range.toString() == '') return;
+  // 記号付け
+  let keyName = event.key;
+  if (keyName == 'a') {
+    explanation.instruction = s;
+    s(range);
+  } else if (keyName == 's') {
+    explanation.instruction = v;
+    v(range);
+  } else if (keyName == 'd') {
+    explanation.instruction = oc;
+    oc(range);
+  } else if (keyName == 'f') {
+    explanation.instruction = adv;
+    adv(range);
+  } else if (keyName == 'g') {
+    explanation.instruction = adj;
+    adj(range);
+  } else if (keyName == 'z') {
+    explanation.instruction = alpha;
+    alpha(range);
+  } else if (keyName == 'c') {
+    clearSelected(range);
+  }
+  marken.explanations.push(explanation);
+});
+
+document.addEventListener('keydown', (event) => {
+  // Cmd(Ctrl)+z で直前の操作を取り消す
+  if (event.key === 'z' && (event.ctrlKey || event.metaKey)) {
+    // clear();
+    if (marken.explanations.length > 0) {
+      const explanation = marken.explanations.pop();
+      clearSelected(explanation.range);
     }
+  }
 });
 
 // ドラッグ選択の操作
-const element = document.querySelector("body");
+const element = document.getElementById("english");
 
-element.addEventListener('selectstart', function(){
-    element.addEventListener('mouseup', function(event) {
-        // 半角スペースで始まるときは選択を打ち消す
-        if(window.getSelection().toString().slice(0,1) == " "){
-            window.getSelection().removeAllRanges();
-        }
+element.addEventListener('selectstart', function () {
+  element.addEventListener('mouseup', function (event) {
+    // 半角スペースで始まるときは選択を打ち消す
+    if (window.getSelection().toString().slice(0, 1) == " ") {
+      window.getSelection().removeAllRanges();
+    }
 
-        // 選択が長すぎる場合は選択を取り消す
-        if(window.getSelection().toString().length >= 80){
-            window.getSelection().removeAllRanges();
-        }
+    // 選択が長すぎる場合は選択を取り消す
+    if (window.getSelection().toString().length >= 80) {
+      window.getSelection().removeAllRanges();
+    }
 
-        // 最後が半角スペースで始まるときは選択を打ち消す
-        if(window.getSelection().toString().slice(-1) == " "){
-            console.log("!")
-            window.getSelection().removeAllRanges();
-        }
-    });
+    // 最後が半角スペースで始まるときは選択を打ち消す
+    if (window.getSelection().toString().slice(-1) == " ") {
+      console.log("!")
+      window.getSelection().removeAllRanges();
+    }
+  });
 });
 
 // ダブルクリックで記号がついた句/節を選ぶ
-document.addEventListener('dblclick', function(event){
+element.addEventListener('dblclick', function (event) {
   // クリックしたblock要素のidを確認する
   console.log(event.target.id);
+});
+
+// 原文を貼り付ける
+window.btn.addEventListener('click', function (event) {
+  marken.text = window.document.getElementById('originalTxt').value;
+  removeElements();
 });

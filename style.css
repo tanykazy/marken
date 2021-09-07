@@ -19,23 +19,24 @@
 }
 
 #english{
-    /* 行間 */
-    line-height: 250%;
-    /* 文字の大きさ */
-    font-size: 1.5em;
-    /* 文字折り返し */
-    overflow-wrap: normal;
+  /* 行間 */
+  line-height: 250%;
+  /* 文字の大きさ */
+  font-size: 1.5em;
+  /* 文字折り返し */
+  overflow-wrap: normal;
 }
 
 [data-ruby] {
-    position: relative;
+  position: relative;
 }
+
 [data-ruby]::before {
-    content: attr(data-ruby);
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-    font-size: 13px;
+  content: attr(data-ruby);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  font-size: 13px;
 }

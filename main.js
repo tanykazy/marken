@@ -2,7 +2,9 @@
 let history = {
   // プロパティ
   currentSymbolNumber: 1,   // 直近のアクション番号
-  allActions: {}, // 全てのアクション
+  allActions: {
+  // actionName: {hint: "解説文"}
+  }, 
 
   // メソッド
   // 直近のアクション番号を取得
@@ -20,6 +22,11 @@ let history = {
   // 現在のアクションを allActions に追加する
   addCurrentActionToAllActions: function(){
     this.allActions[`action${this.currentSymbolNumber}`] = null;
+  },
+  addHintToAllActions:
+  function(event){
+    if (event.path[2].id == "" || event.path[2].id == undefined) return;
+    this.allActions[event.path[2].id] = {hint: `${document.getElementById(`${event.path[0].id}`)?.value}`};
   }
 };
 
@@ -230,18 +237,20 @@ document.addEventListener('dblclick', function(event){
   // 記号がないときは return
   if(event.target.id=="english") return;
 
-  // クリックされた要素のidを確認する
-  console.log(event.target.id);
-
   document.getElementById(`${event.target.id}`).setAttribute('class','tooltip');
 
   let newElement = document.createElement("span");
   let newContent = document.createTextNode("");
-  newElement.innerHTML += `<input type="text" class="hint" name="name">`;
+  newElement.innerHTML += `<textarea class="hint" id="${event.target.id}_hint">`;
   newElement.appendChild(newContent);
   newElement.setAttribute("class","tooltiptext");
   document.getElementById(`${event.target.id}`).appendChild(newElement);
-  //`<input type="text" class="hint" name="name">`;
+
+  history.addHintToAllActions(event);
 
 });
 
+// 解説コメントの更新
+window.addEventListener("keyup", function(event){
+  history.addHintToAllActions(event);
+});

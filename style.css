@@ -2,6 +2,8 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+  padding-left:100px;
+  padding-right:100px;
 }
 
 #originalTxt{
@@ -42,13 +44,12 @@
 }
 
 .tooltip {
-  background-color:lightblue;
 }
 
 .tooltip .tooltiptext {
   font-size:10px;
   visibility: hidden;
-  width: 150px;
+  width: 200px;
   color: #fff;
   text-align: center;
   border-radius: 6px;
@@ -57,12 +58,15 @@
   position: absolute;
   z-index: 1;
   top: 100%;
-  left: 50%;
-  margin-left: -60px;
+  left: 0;
+  margin-left: 0;
 }
 
 .tooltip:hover .tooltiptext {
   visibility: visible;
 }
 
-
+.hint{
+  resize: none;
+  width: 200px;
+}

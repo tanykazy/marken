@@ -30,13 +30,15 @@
   overflow-wrap: normal;
 }
 
+/* ルビ機能 (課題) 内包する要素の文字選択ができない */
 [data-ruby] {
     position: relative;
 }
+
 [data-ruby]::before {
     content: attr(data-ruby);
     position: absolute;
-    top: 0;
+    top: 8px;
     left: 0;
     right: 0;
     margin: auto;
@@ -44,6 +46,7 @@
 }
 
 .tooltip {
+  height: 40px;
 }
 
 .tooltip .tooltiptext {
@@ -59,7 +62,7 @@
   z-index: 1;
   top: 100%;
   left: 0;
-  margin-left: 0;
+  margin-left: 18px;
 }
 
 .tooltip:hover .tooltiptext {
@@ -69,4 +72,6 @@
 .hint{
   resize: none;
   width: 200px;
+  height: 30px;
+  font-size: 1px;
 }

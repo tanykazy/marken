@@ -1,3 +1,43 @@
+function Marken() {
+  this.text = '';
+  this.explanations = [];
+  // this.undo_list = [];
+  // this.redo_list = [];
+  this.index = 0;
+}
+Marken.prototype.add = function (explanation) {
+  this.explanations = this.explanations.slice(0, this.index + 1);
+  this.explanations.push(explanation);
+  this.index = this.explanations.length - 1;
+  return explanation;
+};
+Marken.prototype.undo = function () {
+  if (this.explanations.length > 0) {
+    if (this.index > -1) {
+      return this.explanations[this.index--];
+    }
+  }
+};
+Marken.prototype.redo = function () {
+  if (this.explanations.length > 0) {
+    if (this.index < this.explanations.length - 1) {
+      return this.explanations[++this.index];
+    }
+  }
+};
+
+function Explanation() {
+  this.range = null;
+  this.instruction = null;
+}
+
+function Instruction() {
+  this.fn = null;
+}
+
+let marken = new Marken();
+
+
 // 履歴関連
 let history = {
   // プロパティ
@@ -37,8 +77,6 @@ function removeElements(){
     window.document.getElementById('btn').remove();
     window.document.getElementById('originalTxt').remove();
 }
-// 原文を貼り付ける
-window.btn.addEventListener('click', function(){removeElements();});
 
 // つけた記号を削除する
 function clear(){
@@ -54,57 +92,41 @@ function clear(){
     // 操作ラベルを 1 減らす
     history.decreaseCurrentSymbolNumber();
 }
-document.addEventListener('keydown', (event) => {
-  // Cmd(Ctrl)+z で直前の操作を取り消す
-  if (event.key === 'z' && (event.ctrlKey || event.metaKey)) {
-    clear();
-  }
-});
 
 // 選択箇所の記号をクリアする
-function clearSelected(){
-  let selection = window.getSelection();
-  if(!selection.rangeCount) return; 
-  let range = selection.getRangeAt(0);
+function clearSelected(range) {
   let newNode = document.createElement('span');
-  newNode.setAttribute('style', ''); 
-  newNode.innerHTML = selection.toString().replace("＜","").replace("＞","").replace(" )","").replace("( ","").replace("⤺","");
+  newNode.setAttribute('style', '');
+  newNode.innerHTML = range.toString().replace("＜", "").replace("＞", "").replace(" )", "").replace("( ", "").replace("⤺", "");
   range.deleteContents();
   range.insertNode(newNode);
   // 操作ラベルを 1 減らす
-  history.decreaseCurrentSymbolNumber(); 
+  history.decreaseCurrentSymbolNumber();
 }
 
 // 機能語の記号をつける
-function alpha(){
-  let selection = window.getSelection();
-  if(!selection.rangeCount) return; 
-  let range = selection.getRangeAt(0);
+function alpha(range) {
   let newNode = document.createElement('span');
   newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
   newNode.setAttribute('style', 'border: solid 1px black;background-color: #fff0e0');
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
   // 半角スペース '&thinsp;'
-  newNode.innerHTML = selection.toString();
+  newNode.innerHTML = range.toString();
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近のアクションを追加
   history.addCurrentActionToAllActions();
   // 操作のタグ番号を更新する
   history.increaseCurrentSymbolNumber();
-
 }
 
 // 主語の記号をつける
-function s(){
-  let selection = window.getSelection();
-  if(!selection.rangeCount) return; 
-  let range = selection.getRangeAt(0);
+function s(range) {
   let newNode = document.createElement('span');
   newNode.setAttribute('style', 'border-bottom:3px double black;padding-bottom:2px;');
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
   newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
-  newNode.innerHTML = selection.toString();
+  newNode.innerHTML = range.toString();
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近の action を追加する
@@ -114,15 +136,12 @@ function s(){
 }
 
 // 動詞の記号をつける
-function v(){
-  let selection = window.getSelection();
-  if(!selection.rangeCount) return; 
-  let range = selection.getRangeAt(0);
+function v(range) {
   let newNode = document.createElement('span');
   newNode.setAttribute('style', 'border: solid 1px black;border-radius: 10px;');
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
   newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
-  newNode.innerHTML = selection.toString();
+  newNode.innerHTML = range.toString();
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近の action を追加
@@ -132,15 +151,12 @@ function v(){
 }
 
 // 目的語(O)・補語(C)の記号をつける
-function oc(){
-  let selection = window.getSelection();
-  if(!selection.rangeCount) return; 
-  let range = selection.getRangeAt(0);
+function oc(range) {
   let newNode = document.createElement('span');
-  newNode.setAttribute('style', 'border-bottom:1px solid black;padding-bottom:2px;'); 
+  newNode.setAttribute('style', 'border-bottom:1px solid black;padding-bottom:2px;');
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
   newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
-  newNode.innerHTML = selection.toString();
+  newNode.innerHTML = range.toString();
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近の action を追加する
@@ -150,14 +166,11 @@ function oc(){
 }
 
 // 副詞の記号をつける
-function adv(){
-  let selection = window.getSelection();
-  if(!selection.rangeCount) return; 
-  let range = selection.getRangeAt(0);
+function adv(range){
   let newNode = document.createElement('span');  
   newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
-  newNode.innerHTML = `＜${selection.toString()}＞`;
+  newNode.innerHTML = `＜${range.toString()}＞`;
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近の action を追加する
@@ -167,15 +180,12 @@ function adv(){
 }
 
 // 後置修飾の記号をつける
-function adj(){
-  let selection = window.getSelection();
-  if(!selection.rangeCount) return; 
-  let range = selection.getRangeAt(0);
+function adj(range) {
   let newNode = document.createElement('span');
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
   newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
   newNode.innerHTML = 
-  `<span style="display:inline-block;transform:scale(1.5, 1);">⤺</span>( ${selection.toString()} )`;
+  `<span style="display:inline-block;transform:scale(1.5, 1);">⤺</span>( ${range.toString()} )`;
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近の action を追加する
@@ -184,51 +194,86 @@ function adj(){
   history.increaseCurrentSymbolNumber();
 }
 
+// 原文を貼り付ける
+window.btn.addEventListener('click', function (event) {
+  marken.text = window.document.getElementById('originalTxt').value;
+  removeElements();
+});
+
 // キー操作
 document.addEventListener('keypress', (event) => {
+  const selection = document.getSelection();
+  const range = selection.getRangeAt(0);
 
-    // 選択範囲がないときは return
-    if(window.getSelection().toString() == '') return;
-    // 記号付け
-    let keyName = event.key;
-    if (keyName == 'a'){
-        s();
-    }else if(keyName == 's'){
-        v();
-    }else if(keyName == 'd'){
-        oc();
-    }else if(keyName == 'f'){
-        adv();
-    }else if(keyName == 'g'){
-        adj();
-    }else if(keyName == 'z'){
-        alpha();
-    }else if(keyName == 'c'){
-        clearSelected();
+  const explanation = new Explanation();
+  explanation.range = range;
+
+  // 選択範囲がないときは return
+  if (range.toString() == '') return;
+  // 記号付け
+  let keyName = event.key;
+  if (keyName == 'a') {
+    explanation.instruction = s;
+    s(range);
+  } else if (keyName == 's') {
+    explanation.instruction = v;
+    v(range);
+  } else if (keyName == 'd') {
+    explanation.instruction = oc;
+    oc(range);
+  } else if (keyName == 'f') {
+    explanation.instruction = adv;
+    adv(range);
+  } else if (keyName == 'g') {
+    explanation.instruction = adj;
+    adj(range);
+  } else if (keyName == 'z') {
+    explanation.instruction = alpha;
+    alpha(range);
+  } else if (keyName == 'c') {
+    clearSelected(range);
+  }
+  marken.add(explanation);
+});
+
+document.addEventListener('keydown', (event) => {
+  // Cmd(Ctrl)+z で直前の操作を取り消す
+  if (event.key === 'z' && (event.ctrlKey || event.metaKey)) {
+    const explanation = marken.undo();
+    console.log(explanation);
+    if (!!explanation) {
+      clearSelected(explanation.range);
     }
+  } else if (event.key === 'y' && (event.ctrlKey || event.metaKey)) {
+    const explanation = marken.redo();
+    console.log(explanation);
+    if (!!explanation) {
+      explanation.instruction(explanation.range);
+    }
+  }
 });
 
 // ドラッグ選択の操作
-const element = document.querySelector("body");
+const element = document.getElementById("english");
 
-element.addEventListener('selectstart', function(){
-    element.addEventListener('mouseup', function(event) {
-        // 半角スペースで始まるときは選択を打ち消す
-        if(window.getSelection().toString().slice(0,1) == " "){
-            window.getSelection().removeAllRanges();
-        }
+element.addEventListener('selectstart', function () {
+  element.addEventListener('mouseup', function (event) {
+    // 半角スペースで始まるときは選択を打ち消す
+    if (window.getSelection().toString().slice(0, 1) == " ") {
+      window.getSelection().removeAllRanges();
+    }
 
-        // 選択が長すぎる場合は選択を取り消す
-        if(window.getSelection().toString().length >= 80){
-            window.getSelection().removeAllRanges();
-        }
+    // 選択が長すぎる場合は選択を取り消す
+    if (window.getSelection().toString().length >= 80) {
+      window.getSelection().removeAllRanges();
+    }
 
-        // 最後が半角スペースで始まるときは選択を打ち消す
-        if(window.getSelection().toString().slice(-1) == " "){
-            console.log("!")
-            window.getSelection().removeAllRanges();
-        }
-    });
+    // 最後が半角スペースで始まるときは選択を打ち消す
+    if (window.getSelection().toString().slice(-1) == " ") {
+      console.log("!")
+      window.getSelection().removeAllRanges();
+    }
+  });
 });
 
 // ダブルクリックした要素に input text でヒントを加える

@@ -39,36 +39,54 @@ let marken = new Marken();
 
 
 // 履歴関連
-let history = {
+let history = (function(){
   // プロパティ
-  currentSymbolNumber: 1,   // 直近のアクション番号
-  allActions: {
-  // actionName: {hint: "解説文"}
-  }, 
+  let currentSymbolNumber = 1;   // 直近のアクション番号
+  let allActions = {};
 
   // メソッド
   // 直近のアクション番号を取得
-  getCurrentSymbolNumber: function(){
-    return this.currentSymbolNumber
-  },
+  function getCurrentSymbolNumber(){
+    return currentSymbolNumber
+  }
+
+  function getCurrentSymbolNumber(){
+    return currentSymbolNumber
+  }
+
+  function getPreviousSymbolNumber(){
+    return currentSymbolNumber -1;
+  }
   // アクション番号を inc する
-  increaseCurrentSymbolNumber: function(){
-    this.currentSymbolNumber += 1;    
-  },
+  function increaseCurrentSymbolNumber(){
+    currentSymbolNumber += 1;    
+  }
+
   // アクション番号を dec する
-  decreaseCurrentSymbolNumber: function(){
-    this.currentSymbolNumber -= 1;    
-  },
+  function decreaseCurrentSymbolNumber(){
+    currentSymbolNumber -= 1;    
+  }
+
   // 現在のアクションを allActions に追加する
-  addCurrentActionToAllActions: function(){
-    this.allActions[`action${this.currentSymbolNumber}`] = null;
-  },
-  addHintToAllActions:
-  function(event){
+  function addCurrentActionToAllActions(){
+    allActions[`action${currentSymbolNumber}`] = null;
+  }
+
+  function addHintToAllActions(event){
     if (event.path[2].id == "" || event.path[2].id == undefined) return;
     this.allActions[event.path[2].id] = {hint: `${document.getElementById(`${event.path[0].id}`)?.value}`};
   }
-};
+
+  return {
+    getCurrentSymbolNumber: getCurrentSymbolNumber,
+    increaseCurrentSymbolNumber: increaseCurrentSymbolNumber,
+    decreaseCurrentSymbolNumber: decreaseCurrentSymbolNumber,
+    getPreviousSymbolNumber: getPreviousSymbolNumber,
+
+    addCurrentActionToAllActions: addCurrentActionToAllActions,
+    addHintToAllActions: addHintToAllActions,
+  }
+})();
 
 // ページ内の要素を削除する
 function removeElements(){
@@ -81,14 +99,14 @@ function removeElements(){
 // つけた記号を削除する
 function clear(){
     // 線記号の削除
-    document.getElementById(`action${history.getCurrentSymbolNumber()-1}`).style = null;
+    document.getElementById(`action${history.getPreviousSymbolNumber()}`).style = null;
     // 括弧記号 ( ) ＜ ＞ の削除
-    document.getElementById(`action${history.getCurrentSymbolNumber()-1}`).innerHTML = 
-    document.getElementById(`action${history.getCurrentSymbolNumber()-1}`).innerHTML.replace("＜","").replace("＞","").replace(" )","").replace("( ","").replace("⤺","");
+    document.getElementById(`action${history.getPreviousSymbolNumber()}`).innerHTML = 
+    document.getElementById(`action${history.getPreviousSymbolNumber()}`).innerHTML.replace("＜","").replace("＞","").replace(" )","").replace("( ","").replace("⤺","");
     // ルビの消去
-    document.getElementById(`action${history.getCurrentSymbolNumber()-1}`).removeAttribute("data-ruby");
+    document.getElementById(`action${history.getPreviousSymbolNumber()}`).removeAttribute("data-ruby");
     // id の消去
-    document.getElementById(`action${history.getCurrentSymbolNumber()-1}`).removeAttribute("id");
+    document.getElementById(`action${history.getPreviousSymbolNumber()}`).removeAttribute("id");
     // 操作ラベルを 1 減らす
     history.decreaseCurrentSymbolNumber();
 }
@@ -168,7 +186,7 @@ function oc(range) {
 // 副詞の記号をつける
 function adv(range){
   let newNode = document.createElement('span');  
-  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
+  newNode.setAttribute('data-ruby', `${history.getCurrentSymbolNumber()}`);
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
   newNode.innerHTML = `＜${range.toString()}＞`;
   range.deleteContents();

@@ -31,9 +31,10 @@ function Explanation() {
   this.instruction = null;
 }
 
-function Instruction() {
+function Instruction(func, args, context) {
   this.fn = null;
 }
+Instruction.prototype.do = function(){}
 
 let marken = new Marken();
 

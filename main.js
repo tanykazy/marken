@@ -50,10 +50,6 @@ let history = (function(){
     return currentSymbolNumber
   }
 
-  function getCurrentSymbolNumber(){
-    return currentSymbolNumber
-  }
-
   function getPreviousSymbolNumber(){
     return currentSymbolNumber -1;
   }
@@ -77,6 +73,10 @@ let history = (function(){
     this.allActions[event.path[2].id] = {hint: `${document.getElementById(`${event.path[0].id}`)?.value}`};
   }
 
+  function getAllActions(){
+    return allActions
+  }
+
   return {
     getCurrentSymbolNumber: getCurrentSymbolNumber,
     increaseCurrentSymbolNumber: increaseCurrentSymbolNumber,
@@ -85,6 +85,7 @@ let history = (function(){
 
     addCurrentActionToAllActions: addCurrentActionToAllActions,
     addHintToAllActions: addHintToAllActions,
+    getAllActions: getAllActions
   }
 })();
 

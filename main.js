@@ -1,8 +1,30 @@
 function Marken() {
   this.text = '';
   this.explanations = [];
+  // this.undo_list = [];
+  // this.redo_list = [];
   this.index = 0;
 }
+Marken.prototype.add = function (explanation) {
+  this.explanations = this.explanations.slice(0, this.index + 1);
+  this.explanations.push(explanation);
+  this.index = this.explanations.length - 1;
+  return explanation;
+};
+Marken.prototype.undo = function () {
+  if (this.explanations.length > 0) {
+    if (this.index > -1) {
+      return this.explanations[this.index--];
+    }
+  }
+};
+Marken.prototype.redo = function () {
+  if (this.explanations.length > 0) {
+    if (this.index < this.explanations.length - 1) {
+      return this.explanations[++this.index];
+    }
+  }
+};
 
 function Explanation() {
   this.range = null;
@@ -211,16 +233,22 @@ document.addEventListener('keypress', (event) => {
   } else if (keyName == 'c') {
     clearSelected(range);
   }
-  marken.explanations.push(explanation);
+  marken.add(explanation);
 });
 
 document.addEventListener('keydown', (event) => {
   // Cmd(Ctrl)+z で直前の操作を取り消す
   if (event.key === 'z' && (event.ctrlKey || event.metaKey)) {
-    // clear();
-    if (marken.explanations.length > 0) {
-      const explanation = marken.explanations.pop();
+    const explanation = marken.undo();
+    console.log(explanation);
+    if (!!explanation) {
       clearSelected(explanation.range);
+    }
+  } else if (event.key === 'y' && (event.ctrlKey || event.metaKey)) {
+    const explanation = marken.redo();
+    console.log(explanation);
+    if (!!explanation) {
+      explanation.instruction(explanation.range);
     }
   }
 });

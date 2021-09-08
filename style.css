@@ -2,6 +2,8 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+  padding-left:100px;
+  padding-right:100px;
 }
 
 #originalTxt{
@@ -19,6 +21,7 @@
 }
 
 #english{
+  display: block;
   /* 行間 */
   line-height: 250%;
   /* 文字の大きさ */
@@ -28,15 +31,42 @@
 }
 
 [data-ruby] {
-  position: relative;
+    position: relative;
+}
+[data-ruby]::before {
+    content: attr(data-ruby);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    font-size: 13px;
 }
 
-[data-ruby]::before {
-  content: attr(data-ruby);
+.tooltip {
+}
+
+.tooltip .tooltiptext {
+  font-size:10px;
+  visibility: hidden;
+  width: 200px;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  
+  /* tooltip の位置 */
   position: absolute;
-  top: 0;
+  z-index: 1;
+  top: 100%;
   left: 0;
-  right: 0;
-  margin: auto;
-  font-size: 13px;
+  margin-left: 0;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.hint{
+  resize: none;
+  width: 200px;
 }

@@ -19,49 +19,56 @@ let marken = new Marken();
 // 履歴関連
 let history = {
   // プロパティ
-  currentSymbolNumber: 0,   // 直近のアクション番号
-  allActions: {}, // 全てのアクション
+  currentSymbolNumber: 1,   // 直近のアクション番号
+  allActions: {
+  // actionName: {hint: "解説文"}
+  }, 
 
   // メソッド
   // 直近のアクション番号を取得
-  getCurrentSymbolNumber: function () {
+  getCurrentSymbolNumber: function(){
     return this.currentSymbolNumber
   },
   // アクション番号を inc する
-  increaseCurrentSymbolNumber: function () {
-    this.currentSymbolNumber += 1;
+  increaseCurrentSymbolNumber: function(){
+    this.currentSymbolNumber += 1;    
   },
   // アクション番号を dec する
-  decreaseCurrentSymbolNumber: function () {
-    this.currentSymbolNumber -= 1;
+  decreaseCurrentSymbolNumber: function(){
+    this.currentSymbolNumber -= 1;    
   },
   // 現在のアクションを allActions に追加する
-  addCurrentActionToAllActions: function () {
+  addCurrentActionToAllActions: function(){
     this.allActions[`action${this.currentSymbolNumber}`] = null;
+  },
+  addHintToAllActions:
+  function(event){
+    if (event.path[2].id == "" || event.path[2].id == undefined) return;
+    this.allActions[event.path[2].id] = {hint: `${document.getElementById(`${event.path[0].id}`)?.value}`};
   }
 };
 
 // ページ内の要素を削除する
-function removeElements() {
-  window.document.getElementById('english').innerText = window.document.getElementById('originalTxt').value;
-  window.document.getElementById('originalTxt').value = "";
-  window.document.getElementById('btn').remove();
-  window.document.getElementById('originalTxt').remove();
+function removeElements(){
+    window.document.getElementById('english').innerText = window.document.getElementById('originalTxt').value;
+    window.document.getElementById('originalTxt').value = "";
+    window.document.getElementById('btn').remove();
+    window.document.getElementById('originalTxt').remove();
 }
 
 // つけた記号を削除する
-function clear() {
-  // 線記号の削除
-  document.getElementById(`action${history.getCurrentSymbolNumber() - 1}`).style = null;
-  // 括弧記号 ( ) ＜ ＞ の削除
-  document.getElementById(`action${history.getCurrentSymbolNumber() - 1}`).innerHTML =
-    document.getElementById(`action${history.getCurrentSymbolNumber() - 1}`).innerHTML.replace("＜", "").replace("＞", "").replace(" )", "").replace("( ", "").replace("⤺", "");
-  // ルビの消去
-  document.getElementById(`action${history.getCurrentSymbolNumber() - 1}`).removeAttribute("data-ruby");
-  // id の消去
-  document.getElementById(`action${history.getCurrentSymbolNumber() - 1}`).removeAttribute("id");
-  // 操作ラベルを 1 減らす
-  history.decreaseCurrentSymbolNumber();
+function clear(){
+    // 線記号の削除
+    document.getElementById(`action${history.getCurrentSymbolNumber()-1}`).style = null;
+    // 括弧記号 ( ) ＜ ＞ の削除
+    document.getElementById(`action${history.getCurrentSymbolNumber()-1}`).innerHTML = 
+    document.getElementById(`action${history.getCurrentSymbolNumber()-1}`).innerHTML.replace("＜","").replace("＞","").replace(" )","").replace("( ","").replace("⤺","");
+    // ルビの消去
+    document.getElementById(`action${history.getCurrentSymbolNumber()-1}`).removeAttribute("data-ruby");
+    // id の消去
+    document.getElementById(`action${history.getCurrentSymbolNumber()-1}`).removeAttribute("id");
+    // 操作ラベルを 1 減らす
+    history.decreaseCurrentSymbolNumber();
 }
 
 // 選択箇所の記号をクリアする
@@ -78,7 +85,7 @@ function clearSelected(range) {
 // 機能語の記号をつける
 function alpha(range) {
   let newNode = document.createElement('span');
-  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber() + 1);
+  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
   newNode.setAttribute('style', 'border: solid 1px black;background-color: #fff0e0');
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
   // 半角スペース '&thinsp;'
@@ -96,7 +103,7 @@ function s(range) {
   let newNode = document.createElement('span');
   newNode.setAttribute('style', 'border-bottom:3px double black;padding-bottom:2px;');
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
-  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber() + 1);
+  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
   newNode.innerHTML = range.toString();
   range.deleteContents();
   range.insertNode(newNode);
@@ -111,7 +118,7 @@ function v(range) {
   let newNode = document.createElement('span');
   newNode.setAttribute('style', 'border: solid 1px black;border-radius: 10px;');
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
-  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber() + 1);
+  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
   newNode.innerHTML = range.toString();
   range.deleteContents();
   range.insertNode(newNode);
@@ -126,7 +133,7 @@ function oc(range) {
   let newNode = document.createElement('span');
   newNode.setAttribute('style', 'border-bottom:1px solid black;padding-bottom:2px;');
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
-  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber() + 1);
+  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
   newNode.innerHTML = range.toString();
   range.deleteContents();
   range.insertNode(newNode);
@@ -137,11 +144,11 @@ function oc(range) {
 }
 
 // 副詞の記号をつける
-function adv(range) {
-  let newNode = document.createElement('span');
-  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber() + 1);
+function adv(range){
+  let newNode = document.createElement('span');  
+  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
-  newNode.innerHTML = "＜" + range.toString() + "＞";
+  newNode.innerHTML = `＜${range.toString()}＞`;
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近の action を追加する
@@ -154,11 +161,9 @@ function adv(range) {
 function adj(range) {
   let newNode = document.createElement('span');
   newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
-  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber() + 1);
-  newNode.innerHTML = '<span style="display:inline-block;transform:scale(1.5, 1);">⤺</span>'
-    + '( '
-    + range.toString()
-    + ' )';
+  newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
+  newNode.innerHTML = 
+  `<span style="display:inline-block;transform:scale(1.5, 1);">⤺</span>( ${range.toString()} )`;
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近の action を追加する
@@ -166,6 +171,12 @@ function adj(range) {
   // 操作のタグ番号を更新する
   history.increaseCurrentSymbolNumber();
 }
+
+// 原文を貼り付ける
+window.btn.addEventListener('click', function (event) {
+  marken.text = window.document.getElementById('originalTxt').value;
+  removeElements();
+});
 
 // キー操作
 document.addEventListener('keypress', (event) => {
@@ -237,14 +248,27 @@ element.addEventListener('selectstart', function () {
   });
 });
 
-// ダブルクリックで記号がついた句/節を選ぶ
-element.addEventListener('dblclick', function (event) {
-  // クリックしたblock要素のidを確認する
-  console.log(event.target.id);
+// ダブルクリックした要素に input text でヒントを加える
+document.addEventListener('dblclick', function(event){
+
+  // 記号がないときは return
+  if(event.target.id=="english") return;
+
+  document.getElementById(`${event.target.id}`).setAttribute('class','tooltip');
+
+  let newElement = document.createElement("span");
+  let newContent = document.createTextNode("");
+  newElement.innerHTML += `<textarea class="hint" id="${event.target.id}_hint">`;
+  newElement.appendChild(newContent);
+  newElement.setAttribute("class","tooltiptext");
+  document.getElementById(`${event.target.id}`).appendChild(newElement);
+
+  history.addHintToAllActions(event);
+
 });
 
-// 原文を貼り付ける
-window.btn.addEventListener('click', function (event) {
-  marken.text = window.document.getElementById('originalTxt').value;
-  removeElements();
+// 解説コメントの更新
+window.addEventListener("keyup", function(event){
+  history.addHintToAllActions(event);
 });
+

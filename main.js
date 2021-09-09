@@ -71,7 +71,8 @@ let history = (function () {
 
   function addHintToAllActions(event) {
     if (event.path[2].id == "" || event.path[2].id == undefined) return;
-    this.allActions[event.path[2].id] = { hint: `${document.getElementById(`${event.path[0].id}`)?.value}` };
+
+    allActions[event.path[2].id] = {hint: `${document.getElementById(`${event.path[0].id}`)?.value}`};
   }
 
   function getAllActions() {

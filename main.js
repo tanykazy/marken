@@ -131,6 +131,7 @@ function alpha(range) {
   // newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
   // 半角スペース '&thinsp;'
   newNode.innerHTML = range.toString();
+  newNode.addEventListener('dblclick', onDblclick);
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近のアクションを追加
@@ -146,6 +147,7 @@ function s(range) {
   // newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
   // newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
   newNode.innerHTML = range.toString();
+  newNode.addEventListener('dblclick', onDblclick);
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近の action を追加する
@@ -161,6 +163,7 @@ function v(range) {
   // newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
   // newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
   newNode.innerHTML = range.toString();
+  newNode.addEventListener('dblclick', onDblclick);
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近の action を追加
@@ -176,6 +179,7 @@ function oc(range) {
   // newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
   // newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
   newNode.innerHTML = range.toString();
+  newNode.addEventListener('dblclick', onDblclick);
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近の action を追加する
@@ -190,6 +194,7 @@ function adv(range) {
   // newNode.setAttribute('data-ruby', `${history.getCurrentSymbolNumber()}`);
   // newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
   newNode.innerHTML = `＜${range.toString()}＞`;
+  newNode.addEventListener('dblclick', onDblclick);
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近の action を追加する
@@ -203,8 +208,8 @@ function adj(range) {
   let newNode = document.createElement('span');
   // newNode.setAttribute('id', `action${history.getCurrentSymbolNumber()}`);
   // newNode.setAttribute('data-ruby', history.getCurrentSymbolNumber());
-  newNode.innerHTML =
-    `<span style="display:inline-block;transform:scale(1.5, 1);">⤺</span>( ${range.toString()} )`;
+  newNode.innerHTML = `<span style="display:inline-block;transform:scale(1.5, 1);">⤺</span>( ${range.toString()} )`;
+  newNode.addEventListener('dblclick', onDblclick);
   range.deleteContents();
   range.insertNode(newNode);
   // 履歴に直近の action を追加する
@@ -295,25 +300,42 @@ element.addEventListener('selectstart', function () {
 });
 
 // ダブルクリックした要素に input text でヒントを加える
-document.addEventListener('dblclick', function (event) {
+// document.addEventListener('dblclick', function (event) {
 
-  // 記号がないときは return
-  if (event.target.id == "english") return;
+//   // 記号がないときは return
+//   if (event.target.id == "english") return;
 
-  document.getElementById(`${event.target.id}`).setAttribute('class', 'tooltip');
+//   document.getElementById(`${event.target.id}`).setAttribute('class', 'tooltip');
 
-  let newElement = document.createElement("span");
-  let newContent = document.createTextNode("");
-  newElement.innerHTML += `<textarea class="hint" id="${event.target.id}_hint">`;
-  newElement.appendChild(newContent);
-  newElement.setAttribute("class", "tooltiptext");
-  document.getElementById(`${event.target.id}`).appendChild(newElement);
+//   let newElement = document.createElement("span");
+//   let newContent = document.createTextNode("");
+//   newElement.innerHTML += `<textarea class="hint" id="${event.target.id}_hint">`;
+//   newElement.appendChild(newContent);
+//   newElement.setAttribute("class", "tooltiptext");
+//   document.getElementById(`${event.target.id}`).appendChild(newElement);
 
-  // history.addHintToAllActions(event);
+//   // history.addHintToAllActions(event);
 
-});
+// });
 
 // 解説コメントの更新
 window.addEventListener("keyup", function (event) {
   // history.addHintToAllActions(event);
 });
+
+function onDblclick(event) {
+  event.target.setAttribute('class', 'tooltip');
+  // event.target.addEventListener('mouseover', (e) => {
+    // console.log(e);
+    // console.log(e.target.children[0]);
+    // console.log(e.target.children[0].hidden);
+    // e.target.children[0].setAttribute('');
+  // });
+  // let newElement = document.createElement("span");
+  let newElement = document.createElement("textarea");
+  newElement.setAttribute('class', 'tooltiptext');
+  let newContent = document.createTextNode("");
+  // newElement.innerHTML += `<textarea id="${event.target.id}_hint">`;
+  newElement.appendChild(newContent);
+  event.target.appendChild(newElement);
+}

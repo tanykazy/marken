@@ -1,8 +1,6 @@
 function Marken() {
   this.text = '';
   this.explanations = [];
-  // this.undo_list = [];
-  // this.redo_list = [];
   this.index = 0;
 }
 Marken.prototype.add = function (explanation) {
@@ -116,9 +114,7 @@ function clear() {
 
 // 選択箇所の記号をクリアする
 function clearSelected(range) {
-  // console.log(range);
   let newNode = document.createElement('Text');
-  // newNode.setAttribute('style', '');
   newNode.removeAttribute('style');
   newNode.innerHTML = range.toString().replace("＜", "").replace("＞", "").replace(" )", "").replace("( ", "").replace("⤺", "");
   range.deleteContents();
@@ -263,13 +259,12 @@ document.addEventListener('keydown', (event) => {
   // Cmd(Ctrl)+z で直前の操作を取り消す
   if (event.key === 'z' && (event.ctrlKey || event.metaKey)) {
     const explanation = marken.undo();
-    // console.log(explanation);
     if (!!explanation) {
       clearSelected(explanation.range);
     }
+  // Cmd(Ctrl)+y で直前の取り消しを取り消す
   } else if (event.key === 'y' && (event.ctrlKey || event.metaKey)) {
     const explanation = marken.redo();
-    // console.log(explanation);
     if (!!explanation) {
       explanation.instruction(explanation.range);
     }
@@ -281,17 +276,6 @@ const element = document.getElementById("english");
 
 element.addEventListener('selectstart', function () {
   element.addEventListener('mouseup', function (event) {
-    console.log(window.getSelection().getRangeAt(0));
-    console.log(window.getSelection().getRangeAt(0).toString());
-
-    const range = window.getSelection().getRangeAt(0);
-
-    console.log(range.commonAncestorContainer);
-    console.log(range.startContainer);
-    console.log(range.toString());
-    console.log(range.endContainer);
-
-
     // 半角スペースで始まるときは選択を打ち消す
     if (window.getSelection().toString().slice(0, 1) == " ") {
       window.getSelection().removeAllRanges();
